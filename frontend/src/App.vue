@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { Client } from "../../backend/index.ts"
+const client = new Client();
+await client.getNATData();
 import HelloWorld from './components/HelloWorld.vue'
 </script>
 
