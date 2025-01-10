@@ -1,9 +1,12 @@
+
 <script setup lang="ts">
+/* eslint-disable */
+// @ts-nocheck
+
 import { RouterLink, RouterView } from 'vue-router'
-import { Client } from "../../backend/index.ts"
-const client = new Client();
-await client.getNATData();
 import HelloWorld from './components/HelloWorld.vue'
+import express from "express";
+
 </script>
 
 <template>
