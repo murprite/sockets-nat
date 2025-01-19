@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
-    "frontdev": "cross-env NODE_ENV=development vite --host --config ./frontend/vite.config.ts",
-    "backdev": "cross-env NODE_ENV=development pnpm tsx --watch ./backend/index.ts",
+    "frontend": "cross-env NODE_ENV=development vite --host --config ./frontend/vite.config.ts",
+    "backend": "cross-env NODE_ENV=development pnpm tsx --watch ./backend/index.ts",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
@@ -17,6 +17,7 @@
   "dependencies": {
     "express": "^4.21.2",
     "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
