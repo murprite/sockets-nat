@@ -13,6 +13,7 @@ export default class SocketServer {
     httpServer: HTTPServer;
     io: Server;
     peers = new Map<string, Socket>();
+    messages: Array<string[]> = [];
 
     routerList: MainRouter[] = [
         new MainRouter(),
@@ -44,23 +45,31 @@ export default class SocketServer {
     }
     async prepare() {
         this.io.on("connection", socket => {
+            // Add peer to the map
             log.info("SocketServerPrepare", "Client connected " + socket.id);
             this.peers.set(socket.id, socket);
 
-            socket.on("sendMessage", msg => {
-                console.log(msg)
-            })
-
             socket.on("getPeersList", () => {
                 this.io.emit("updatePeersList", Array.from(this.peers.keys()));
-                console.log(this.peers.keys())
+            });
+            
+            socket.on("getMessagesList", () => {
+                this.io.emit("updateMessages", this.messages);
             });
 
+            // Delete peers from map, so they won't be shown for other peers
             socket.on("disconnect", reason => {
                 log.info("SocketServerPrepare", "Client disconnected, reason " + reason);
                 this.peers.delete(socket.id);
 
                 this.io.emit("updatePeersList", Array.from(this.peers.keys()));
+            });
+
+            socket.on("sendMessage", (message) => {
+                this.messages.push(message);
+                this.io.emit("updateMessages", this.messages);
+
+                console.log(this.messages)
             });
         });
 

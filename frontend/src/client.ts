@@ -5,11 +5,16 @@ export default class Client {
     socket: Socket;
     userID: string | undefined;
 
-    constructor(private updatePeersCallback: (peers: string[]) => void) {
+    constructor(private updatePeersCallback: (peers: string[]) => void, private updateMessagesCallback: (messages: Array<string[]>) => void) {
         this.socket = io(this.serverEndpoint);
         
         this.socket.on("updatePeersList", (newPeers) => {
-            this.updatePeersCallback(newPeers); // Сообщаем компоненту об изменении
+            this.updatePeersCallback(newPeers);
+        });
+
+        this.socket.on("updateMessages", messages => {
+            this.updateMessagesCallback(messages);
+            console.log("should be on reload")
         });
     }
 
@@ -21,11 +26,14 @@ export default class Client {
         this.socket.connect();
     }
 
-    async sendMessage(msg: string) {
-        this.socket.emit("sendMessage", msg);   
+    async sendMessage(msg) {
+        this.socket.emit("sendMessage", [this.socket.id, msg]);   
     }
 
     requestPeersList() {
         this.socket.emit("getPeersList", this.userID);
+    }
+    requestMessages() {
+        this.socket.emit("getMessagesList", this.userID);
     }
 }
