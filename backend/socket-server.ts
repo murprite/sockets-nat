@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import MainRouter from "./router";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { createServer, Server as HTTPServer } from "http";
 import Logger from "./logger";
 
@@ -12,6 +12,7 @@ export default class SocketServer {
     port: number = 5001;
     httpServer: HTTPServer;
     io: Server;
+    peers = new Map<string, Socket>();
 
     routerList: MainRouter[] = [
         new MainRouter(),
@@ -35,7 +36,7 @@ export default class SocketServer {
             res.send("Did you expect something, huh? There's nothing to see");
         })
 
-        // Final universal route for the rest routes
+        // Universal route
         this.app.use("*", (req, res) => {
             res.send(this.indexHTML);
         })
@@ -44,20 +45,29 @@ export default class SocketServer {
     async prepare() {
         this.io.on("connection", socket => {
             log.info("SocketServerPrepare", "Client connected " + socket.id);
+            this.peers.set(socket.id, socket);
 
-            log.info("SocketServerPrepare", "Begin to verify client's request...");
+            socket.on("sendMessage", msg => {
+                console.log(msg)
+            })
 
-            try {
-                this.validateSocket(socket);
-            } catch (e) {
-                log.error("SocketServerPrepare", "Client's body is invalid, disconnecting...");
-                console.log(e);
-            }
+            socket.on("getPeersList", () => {
+                this.io.emit("updatePeersList", Array.from(this.peers.keys()));
+                console.log(this.peers.keys())
+            });
+
+            socket.on("disconnect", reason => {
+                log.info("SocketServerPrepare", "Client disconnected, reason " + reason);
+                this.peers.delete(socket.id);
+
+                this.io.emit("updatePeersList", Array.from(this.peers.keys()));
+            });
         });
 
         this.httpServer.listen(this.port, () => {
             console.log(`Start listening at ${this.port} port`);
         });
+        
     }
 
     validateSocket(socket) {

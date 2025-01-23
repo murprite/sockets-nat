@@ -1,14 +1,16 @@
 import { io, Socket } from "socket.io-client";
 
 export default class Client {
-    // TODO: dynamically find server's endpoint
     serverEndpoint: string = "http://localhost:5001";
     socket: Socket;
     userID: string | undefined;
 
-    constructor() {
+    constructor(private updatePeersCallback: (peers: string[]) => void) {
         this.socket = io(this.serverEndpoint);
-        this.userID = this.socket.id;
+        
+        this.socket.on("updatePeersList", (newPeers) => {
+            this.updatePeersCallback(newPeers); // Сообщаем компоненту об изменении
+        });
     }
 
     async disconnectServer() {
@@ -20,6 +22,10 @@ export default class Client {
     }
 
     async sendMessage(msg: string) {
-        this.socket.send(msg);
+        this.socket.emit("sendMessage", msg);   
+    }
+
+    requestPeersList() {
+        this.socket.emit("getPeersList", this.userID);
     }
 }
