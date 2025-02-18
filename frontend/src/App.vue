@@ -32,27 +32,45 @@ onMounted(() => {
 </script>
 
 <template>
-    <header>
+    <header class="header">
         <h1>Connect</h1>
         <h2>List of all peers</h2>
-        <div class="Left">
-            <div>
-                <div v-for="peer in peers" :key="peer">
-                    {{ peer }}
-                </div>
+        <div>
+            <div v-for="peer in peers" :key="peer">
+                {{ peer }}
             </div>
-
-            <form action="">
-            Send some message to every client:
-            <input type="text" v-model="userMessage">
-            <input type="submit" @click="(e) => sendUserMessage(e)">
-            </form>
         </div>
-        <div class="Right">
-            <div class="" v-for="message in messages" :key="message[0]"> 
-                <h3>{{ message[0] }}</h3>
-                <span>{{ message[1] }}</span>
+        <div class="main">
+            <div class="Left">
+                <form action="">
+                    Send some message to every client:
+                    <input type="text" v-model="userMessage">
+                    <input type="submit" @click="(e) => sendUserMessage(e)">
+                </form>
+            </div>
+            <div class="Right">
+                <div class="" v-for="message in messages" :key="message[0]">
+                    <h3 :style="client.options.color">{{ message[0] }}</h3>
+                    <span>{{ message[1] }}</span>
+                </div>
             </div>
         </div>
     </header>
 </template>
+
+<style scoped>
+    .main {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+        justify-content: stretch;
+        margin-top: 15px;
+    }
+    .main > * {
+        width: 100%;
+    }
+    .Right {
+        overflow-y: visible;
+        overflow-x: hidden; 
+    }
+</style>

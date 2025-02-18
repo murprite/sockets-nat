@@ -1,12 +1,19 @@
 import { io, Socket } from "socket.io-client";
 
+interface IClientOptions {
+    color: string;
+}
+
 export default class Client {
     serverEndpoint: string = "http://localhost:5001";
     socket: Socket;
     userID: string | undefined;
+    options: IClientOptions;
 
     constructor(private updatePeersCallback: (peers: string[]) => void, private updateMessagesCallback: (messages: Array<string[]>) => void) {
         this.socket = io(this.serverEndpoint);
+
+        this.options = {color: "#AA1111"};
         
         this.socket.on("updatePeersList", (newPeers) => {
             this.updatePeersCallback(newPeers);
