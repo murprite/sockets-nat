@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import Client from './client';
+import ClientSelect from './components/ClientSelect.vue';
+import ClientHello from './components/ClientHello.vue';
 
 const peers = ref<string[]>([]);
 const messages = ref([]);
@@ -32,45 +34,75 @@ onMounted(() => {
 </script>
 
 <template>
-    <header class="header">
-        <h1>Connect</h1>
-        <h2>List of all peers</h2>
-        <div>
-            <div v-for="peer in peers" :key="peer">
-                {{ peer }}
-            </div>
+    <ClientHello :client/>
+    <main class="main">
+        <div class="main__clientList">
+            <ClientSelect v-for="peer in peers" :key="peer" :clientOptions="peer"/>
         </div>
-        <div class="main">
-            <div class="Left">
-                <form action="">
-                    Send some message to every client:
-                    <input type="text" v-model="userMessage">
-                    <input type="submit" @click="(e) => sendUserMessage(e)">
-                </form>
-            </div>
-            <div class="Right">
+        <div class="main__column">
+            <div class="main__messages">
                 <div class="" v-for="message in messages" :key="message[0]">
                     <h3 :style="client.options.color">{{ message[0] }}</h3>
                     <span>{{ message[1] }}</span>
                 </div>
             </div>
+            <div class="main__form">
+                <form action="">
+                    <input type="text" v-model="userMessage" placeholder="Напишите сообщение">
+                    <input type="submit" @click="(e) => sendUserMessage(e)">
+                </form>
+            </div>
         </div>
-    </header>
+    </main>
 </template>
 
 <style scoped>
+
+    .main__form {
+        margin-top: auto;
+    }
     .main {
         display: flex;
-        flex-direction: column-reverse;
-        align-items: center;
-        justify-content: stretch;
-        margin-top: 15px;
-    }
-    .main > * {
-        width: 100%;
+        height: 100%;
     }
     .Right {
         overflow-y: visible;
         overflow-x: hidden; 
+    }
+    #app {
+        height: 100%;
+    }
+    .main__clientList {
+        background: #17212B;
+        width: 20vw;
+    }
+    .main {
+        background: #0E1621;
+    }
+    .main__form input::placeholder {
+        color: #26394a;
+    }
+    .main__form input {
+        color: #f5f5f5;
+        outline: none;
+        margin-top: auto;
+        min-width: 150px;
+        background: #17212B;
+        padding: 5px 15px;
+        border: 0;
+    }
+    .main__form input[type='submit'] {
+        margin-left: auto;
+    }
+    .main__form {
+        background: #17212B;
+        width: 100%;
+    }
+    .main__column {
+        width: 100%;
+    }
+    .main__messages {
+        color: #f5f5f5;
+        padding: 15px;
     }
 </style>
