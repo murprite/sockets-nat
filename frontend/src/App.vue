@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, Ref } from 'vue';
 import Client from './client';
 import ClientSelect from './components/ClientSelect.vue';
 import ClientHello from './components/ClientHello.vue';
+import { IMessage } from './constants';
 
 const peers = ref<string[]>([]);
-const messages = ref([]);
+const messages: Ref<IMessage[]> = ref([]);
 
 const userMessage = defineModel("userMessage");
 
@@ -31,19 +32,21 @@ onMounted(() => {
     client.requestMessages(); // Запрашиваем список сообщений при загрузке
 });
 
+console.log("mark", peers.value)
+
 </script>
 
 <template>
-    <ClientHello :client/>
     <main class="main">
+        <ClientHello :client v-if="!client.registered.value"/>
         <div class="main__clientList">
-            <ClientSelect v-for="peer in peers" :key="peer" :clientOptions="peer"/>
+            <ClientSelect v-for="peer in peers" :key="peer" :peer="peer"/>
         </div>
         <div class="main__column">
             <div class="main__messages">
-                <div class="" v-for="message in messages" :key="message[0]">
-                    <h3 :style="client.options.color">{{ message[0] }}</h3>
-                    <span>{{ message[1] }}</span>
+                <div class="" v-for="message in messages" :key="message.messageid">
+                    <h3 :style="{color: message.color}">{{ message.username }}</h3>
+                    <span>{{ message.message }}</span>
                 </div>
             </div>
             <div class="main__form">
@@ -57,10 +60,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
-    .main__form {
-        margin-top: auto;
-    }
     .main {
         display: flex;
         height: 100%;
@@ -82,6 +81,10 @@ onMounted(() => {
     .main__form input::placeholder {
         color: #26394a;
     }
+    .main__form form {
+        height: 100%;
+        display: flex;
+    }
     .main__form input {
         color: #f5f5f5;
         outline: none;
@@ -90,13 +93,22 @@ onMounted(() => {
         background: #17212B;
         padding: 5px 15px;
         border: 0;
+        height: 100%;
     }
     .main__form input[type='submit'] {
         margin-left: auto;
+        cursor: pointer;
+    }
+    .main__form input[type='submit']:hover {
+        background: #1c2834;
+        transition: all 0.1s;
     }
     .main__form {
         background: #17212B;
         width: 100%;
+        display: flex;
+        flex-direction: column;
+        height: 10vh;
     }
     .main__column {
         width: 100%;
@@ -104,5 +116,6 @@ onMounted(() => {
     .main__messages {
         color: #f5f5f5;
         padding: 15px;
+        height: 90vh;
     }
 </style>

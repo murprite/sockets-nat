@@ -3,6 +3,21 @@ import MainRouter from "./router";
 import { Server, Socket } from "socket.io";
 import { createServer, Server as HTTPServer } from "http";
 import Logger from "./logger";
+import { randomUUID } from "crypto";
+
+interface IPeer {
+    socket: Socket,
+    username: string,
+    color: string
+}
+
+interface IMessage {
+    messageid: string,
+    userid: string,
+    username: string,
+    color: string,
+    message: string,
+}
 
 const log = new Logger();
 
@@ -12,8 +27,8 @@ export default class SocketServer {
     port: number = 5001;
     httpServer: HTTPServer;
     io: Server;
-    peers = new Map<string, Socket>();
-    messages: Array<string[]> = [];
+    peers = new Map<string, IPeer>();
+    messages: IMessage[] = [];
 
     routerList: MainRouter[] = [
         new MainRouter(),
@@ -47,30 +62,48 @@ export default class SocketServer {
         this.io.on("connection", socket => {
             // Add peer to the map
             log.info("SocketServerPrepare", "Client connected " + socket.id);
-            this.peers.set(socket.id, socket);
 
             socket.on("getPeersList", () => {
-                this.io.emit("updatePeersList", Array.from(this.peers.keys()));
+                this.io.emit("updatePeersList", Array.from(this.peers.values()));
             });
             
             socket.on("getMessagesList", () => {
                 this.io.emit("updateMessages", this.messages);
             });
 
-            // Delete peers from map, so they won't be shown for other peers
+            // Delete peers from map, so they won't be shown for clients
             socket.on("disconnect", reason => {
                 log.info("SocketServerPrepare", "Client disconnected, reason " + reason);
                 this.peers.delete(socket.id);
 
-                this.io.emit("updatePeersList", Array.from(this.peers.keys()));
+                this.io.emit("updatePeersList", Array.from(this.peers.values()));
             });
 
-            socket.on("sendMessage", (message) => {
-                this.messages.push(message);
+            socket.on("sendMessage", ([id, username, message, color]) => {
+                this.messages.push({
+                    messageid: randomUUID(),
+                    username: id,
+                    userid: username,
+                    color,
+                    message,
+                });
                 this.io.emit("updateMessages", this.messages);
 
                 console.log(this.messages)
             });
+
+
+            // Listening clients if someone is trying to register
+            socket.on("registerProfile", (data: IPeer) => {
+                this.peers.set(socket.id, data);
+                
+                socket.emit("registeredProfile", {
+                    status: "fulfilled",
+                    profile: data,
+                    errorMessage: ""
+                });
+                this.io.emit("updatePeersList", Array.from(this.peers.values()));
+            })
         });
 
         this.httpServer.listen(this.port, () => {

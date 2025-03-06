@@ -1,21 +1,28 @@
 <script setup lang="ts">
+import Client from '../client';
+import { Ref, defineProps, defineModel } from 'vue';
 
-const { client } = defineProps(['client']);
-
-const profileModel = defineModel("profileModel");
-
-async function submitForm() {
-    const options = {
-        name: profileModel.value,
-    }
-    try {
-        return await client.initProfile(options);
-    } catch(e) {
-        console.log("Error while init new profile.", e);
-        return;
-    }
-    
+interface IClientProps {
+    client: Client;
 }
+
+const { client } = defineProps(['client']) as IClientProps;
+
+const usernameModel = defineModel("usernameModel") as Ref<string>;
+
+function submitForm(e: Event) {
+    e.preventDefault();
+
+    const button = e.target as HTMLButtonElement;
+
+    // Prevent user to submit empty messages and messages with only spaces, tabs, etc
+    if(button.value === "" || button.value.replace(/\s+/g, "") === "") return;
+
+    client.username = usernameModel.value;
+
+    client.registerProfile();
+}
+  
 </script>
 <template>
     <div class="ClientHello">
@@ -24,9 +31,9 @@ async function submitForm() {
                 <h3>Настройте профиль</h3>
                 <div class="ClientForm__name">
                     <label for="name">Введите своё имя</label>
-                    <input type="text" id="name" name="name" v-model="profileModel">
+                    <input type="text" id="name" name="name" v-model="usernameModel">
                 </div>
-                <input type="submit" value="Войти" class="ClientForm__submit" @click="() => submitForm()">
+                <input type="submit" value="Войти" class="ClientForm__submit" @click="e => submitForm(e)">
             </form>
         </div>
     </div>

@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-    const { clientOptions } = defineProps(['clientOptions']);
 
-    
+const { peer } = defineProps(['peer']);
+console.log("mark", peer)
 </script>
 
 <template>
     <div class="ClientSelect">
         <div class="ClientSelect__img">
-            <img :src="clientOptions.img ? clientOptions.img : '../src/logo.svg'">
+            <img :src="peer.img ? peer.img : '../../userdata/default.jpg'">
         </div>
         <div class="ClientSelect__main">
-            <h3>{{ clientOptions.name }}</h3>
+            <h3 :style="{color: peer.color}">{{ peer.username }}</h3>
         </div>
     </div>
 </template>
@@ -20,6 +20,10 @@
         display: flex;
         padding: 15px;
         color: #f5f5f5;
+        align-items: center;
+    }
+    .ClientSelect__main {
+        margin-left: 15px;
     }
     .ClientSelect:hover {
         background: #1c2834;
@@ -27,9 +31,12 @@
     }
     .ClientSelect__img {
         border-radius: 50%;
+        max-width: 50px;
+        max-height: 50px;
     }
-
-    .ClientSelect__main {
-        
+    .ClientSelect__img img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
     }
 </style>
