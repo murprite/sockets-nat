@@ -19,7 +19,7 @@ export default class Client {
 
     constructor(private updatePeersCallback: (peers: string[]) => void, private updateMessagesCallback: (messages: Array<string[]>) => void) {
         if(isMobile()) {
-            this.serverEndpoint = "http://192.168.0.101:5001";
+            this.serverEndpoint = "http://192.168.43.225:5001";
         }
         this.registered = ref(false);
         this.socket = io(this.serverEndpoint);

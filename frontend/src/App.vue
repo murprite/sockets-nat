@@ -3,12 +3,13 @@ import { ref, onMounted, Ref } from 'vue';
 import Client from './client';
 import ClientSelect from './components/ClientSelect.vue';
 import ClientHello from './components/ClientHello.vue';
+import InputForm from './components/InputForm.vue'
 import { IMessage } from './constants';
+
+import 'emoji-picker-element';
 
 const peers = ref<string[]>([]);
 const messages: Ref<IMessage[]> = ref([]);
-
-const userMessage = defineModel("userMessage");
 
 function updatePeers(newPeers: string[]) {
     peers.value = newPeers;
@@ -17,13 +18,6 @@ function updatePeers(newPeers: string[]) {
 function updateMessages(newMessages) {
     messages.value = newMessages;
 }
-
-function sendUserMessage(e: Event) {
-    e.preventDefault();
-    client.sendMessage(userMessage.value);
-    userMessage.value = "";
-}
-
 
 const client = new Client(updatePeers, updateMessages);
 
@@ -50,16 +44,17 @@ console.log("mark", peers.value)
                 </div>
             </div>
             <div class="main__form">
-                <form action="">
-                    <input type="text" v-model="userMessage" placeholder="Напишите сообщение">
-                    <input type="submit" @click="(e) => sendUserMessage(e)">
-                </form>
+                <InputForm :client/>
             </div>
         </div>
     </main>
 </template>
 
 <style scoped>
+    emoji-picker {
+        display: none;
+        position: absolute;
+    }
     .main {
         display: flex;
         height: 100%;
@@ -108,7 +103,7 @@ console.log("mark", peers.value)
         width: 100%;
         display: flex;
         flex-direction: column;
-        height: 10vh;
+        height: 45px;
     }
     .main__column {
         width: 100%;
