@@ -1,8 +1,8 @@
 <template>
-    <form>
+    <form class="InputForm">
         <InputFile />
         <input type="text" v-model="messageModel" placeholder="Напишите сообщение">
-        <emoji-picker></emoji-picker>
+        <div class="InputForm__"></div>
         <input type="submit" @click="(e) => sendUserMessage(e)">
         <InputMicrophone />
     </form>
@@ -23,6 +23,11 @@
     
 </script>
 
-<style>
-
+<style scoped>
+    input {
+        outline: 0;
+        color: aliceblue;
+        background: #17212B;
+        border: 0;
+    }
 </style>

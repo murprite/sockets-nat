@@ -80,6 +80,10 @@ console.log("mark", peers.value)
         height: 100%;
         display: flex;
     }
+    .main__form {
+        position: absolute;
+        bottom: 0;
+    }
     .main__form input {
         color: #f5f5f5;
         outline: none;
@@ -100,7 +104,6 @@ console.log("mark", peers.value)
     }
     .main__form {
         background: #17212B;
-        width: 100%;
         display: flex;
         flex-direction: column;
         height: 45px;
