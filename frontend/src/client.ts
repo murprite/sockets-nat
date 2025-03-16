@@ -19,7 +19,7 @@ export default class Client {
 
     constructor(private updatePeersCallback: (peers: string[]) => void, private updateMessagesCallback: (messages: Array<string[]>) => void) {
         if(isMobile()) {
-            this.serverEndpoint = "http://192.168.43.225:5001";
+            this.serverEndpoint = "http://192.168.139.92:5001";
         }
         this.registered = ref(false);
         this.socket = io(this.serverEndpoint);
@@ -39,7 +39,7 @@ export default class Client {
 
         this.socket.on("registeredProfile", status => {
             this.registered.value = status.errorMessage === "";
-        })
+        });
     }
 
 

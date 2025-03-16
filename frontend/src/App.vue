@@ -11,6 +11,7 @@ import 'emoji-picker-element';
 const peers = ref<string[]>([]);
 const messages: Ref<IMessage[]> = ref([]);
 
+
 function updatePeers(newPeers: string[]) {
     peers.value = newPeers;
 }
@@ -19,6 +20,15 @@ function updateMessages(newMessages) {
     messages.value = newMessages;
 }
 
+// function createUserPopup(str: string) {
+//     const div = document.createElement("div");
+//     div.className = "Messages__popup";
+//     div.textContent = str;
+
+//     const elemMount = document.querySelector(".main__messages");
+//     elemMount?.append(div);
+// }
+
 const client = new Client(updatePeers, updateMessages);
 
 onMounted(() => {
@@ -26,7 +36,10 @@ onMounted(() => {
     client.requestMessages(); // Запрашиваем список сообщений при загрузке
 });
 
-console.log("mark", peers.value)
+// Listening server to show new/disconected profile locally
+// client.socket.on("clientRegisteredProfile", username => createUserPopup(`${username} присоединился к чату`));
+// client.socket.on("clientDisconected", username => createUserPopup(`${username} вышел из чата`));
+
 
 </script>
 
@@ -38,7 +51,7 @@ console.log("mark", peers.value)
         </div>
         <div class="main__column">
             <div class="main__messages">
-                <div class="" v-for="message in messages" :key="message.messageid">
+                <div :class="['main__message', message.class]" v-for="message in messages" :key="message.messageid">
                     <h3 :style="{color: message.color}">{{ message.username }}</h3>
                     <span>{{ message.message }}</span>
                 </div>
@@ -58,6 +71,7 @@ console.log("mark", peers.value)
     .main {
         display: flex;
         height: 100%;
+        overflow: hidden;
     }
     .Right {
         overflow-y: visible;
@@ -83,6 +97,7 @@ console.log("mark", peers.value)
     .main__form {
         position: absolute;
         bottom: 0;
+        width: 100%;
     }
     .main__form input {
         color: #f5f5f5;
@@ -109,11 +124,26 @@ console.log("mark", peers.value)
         height: 45px;
     }
     .main__column {
-        width: 100%;
+        width: 80vw;
     }
     .main__messages {
         color: #f5f5f5;
         padding: 15px;
         height: 90vh;
+        gap: 5px;
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+
+<style>
+    .SystemMessage {
+        align-self: center;
+        background: #17212B;
+        color: aliceblue;
+        padding: 2px 10px;
+        border-radius: 15px;
+        text-align: center;
+        display: flex;
     }
 </style>

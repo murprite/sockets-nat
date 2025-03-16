@@ -13,4 +13,5 @@ export interface IMessage {
     username: string,
     color: string,
     message: string,
+    class?: string
 }

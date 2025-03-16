@@ -5,18 +5,12 @@ import { createServer, Server as HTTPServer } from "http";
 import Logger from "./logger";
 import { randomUUID } from "crypto";
 
+import { IMessage } from "../frontend/src/constants";
+
 interface IPeer {
     socket: Socket,
     username: string,
     color: string
-}
-
-interface IMessage {
-    messageid: string,
-    userid: string,
-    username: string,
-    color: string,
-    message: string,
 }
 
 const log = new Logger();
@@ -73,10 +67,24 @@ export default class SocketServer {
 
             // Delete peers from map, so they won't be shown for clients
             socket.on("disconnect", reason => {
-                log.info("SocketServerPrepare", "Client disconnected, reason " + reason);
-                this.peers.delete(socket.id);
+                const user = this.peers.get(socket.id);
 
+                log.info("SocketServerPrepare", "Client disconnected, reason " + reason);
+
+                this.io.emit("clientDisconected", user?.username);
+
+                this.messages.push({
+                    messageid: "0",
+                    userid: "0",
+                    username: "",
+                    color: "aliceblue",
+                    message: `${user?.username} вышел из чата`,
+                    class: "SystemMessage"
+                });
+
+                this.peers.delete(socket.id);
                 this.io.emit("updatePeersList", Array.from(this.peers.values()));
+                this.io.emit("updateMessages", this.messages);
             });
 
             socket.on("sendMessage", ([id, username, message, color]) => {
@@ -102,6 +110,18 @@ export default class SocketServer {
                     profile: data,
                     errorMessage: ""
                 });
+
+                this.messages.push({
+                    messageid: "0",
+                    userid: "0",
+                    username: "",
+                    color: "aliceblue",
+                    message: `${data.username} вошёл в чат`,
+                    class: "SystemMessage"
+                });
+
+                this.io.emit("clientRegisteredProfile", data.username); 
+
                 this.io.emit("updatePeersList", Array.from(this.peers.values()));
             })
         });

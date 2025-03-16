@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
 const { peer } = defineProps(['peer']);
-console.log("mark", peer)
+
 </script>
 
 <template>

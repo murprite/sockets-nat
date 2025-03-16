@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Client from '../client';
-import { Ref, defineProps, defineModel } from 'vue';
+import { Ref, defineModel } from 'vue';
 
 interface IClientProps {
     client: Client;
@@ -13,10 +13,8 @@ const usernameModel = defineModel("usernameModel") as Ref<string>;
 function submitForm(e: Event) {
     e.preventDefault();
 
-    const button = e.target as HTMLButtonElement;
-
     // Prevent user to submit empty messages and messages with only spaces, tabs, etc
-    if(button.value === "" || button.value.replace(/\s+/g, "") === "") return;
+    if(usernameModel.value === "" || usernameModel.value.replace(/\s+/g, "") === "") return;
 
     client.username = usernameModel.value;
 
@@ -44,6 +42,7 @@ function submitForm(e: Event) {
         width: 100vw;
         background: #0E1621;
         position: absolute;
+        z-index: 1;
     }
     .ClientHello__modal {
         padding: 25px;
